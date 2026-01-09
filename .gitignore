@@ -1,0 +1,215 @@
+################################################################################
+# .gitignore - Projeto QrLinkki
+# Configuração para .NET (C#) + React Native (Expo)
+################################################################################
+
+#==============================================================================
+# IDEs e Editores
+#==============================================================================
+# Visual Studio Code
+
+.agent
+QrLinkki_secrets/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# JetBrains Rider / IntelliJ
+.idea/
+*.swp
+*.swo
+*~
+
+#==============================================================================
+# .NET / C# - Build e Artefatos
+#==============================================================================
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+.nuget/
+
+# MSBuild Binary and Structured Log
+*.binlog
+
+# Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+TestResult.xml
+*.VisualState.xml
+nunit-*.xml
+*.trx
+coverage*.json
+coverage*.xml
+*.coveragexml
+
+# Code Coverage
+CodeCoverage/
+*.coverage
+*.coveragexml
+
+#==============================================================================
+# Node.js / React Native / Expo
+#==============================================================================
+# Dependencies
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.pnpm-debug.log*
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# React Native / Metro
+.metro-health-check*
+
+# TypeScript
+*.tsbuildinfo
+*.tsbuildinfo.*
+
+# Build outputs
+build/
+.build/
+**/bin/
+**/build/
+*.log
+buildlog*.txt
+
+#==============================================================================
+# Mobile - iOS e Android (gerados automaticamente)
+#==============================================================================
+# Pastas nativas geradas pelo Expo
+/ios/
+/android/
+# Mas permite android/ quando necessário para builds locais
+# (android/app/bin e android/app/build são gerados e devem ser ignorados)
+
+# Arquivos nativos sensíveis
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+.kotlin/
+
+# Gradle (Android)
+android/gradle.properties
+android/local.properties
+.gradle/
+
+#==============================================================================
+# Variáveis de Ambiente e Configurações Sensíveis
+#==============================================================================
+# IMPORTANTE: Nunca commitar arquivos .env com credenciais reais!
+.env
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+#==============================================================================
+# Dados e Armazenamento Local
+#==============================================================================
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Storage de arquivos da API
+/QrLinkki.Api/Storage/
+api-storage/
+api-storage-local/
+data/
+!QrLinkki.Infrastructure/Persistence/Data/
+!QrLinkki.Infrastructure/Persistence/Data/AppDbContext.cs
+sql-data-local/
+
+# Keystores (certificados)
+keystores/
+*.pem
+
+#==============================================================================
+# Sistema Operacional
+#==============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+#==============================================================================
+# Outros
+#==============================================================================
+secrets.md
+
+# Temporários
+tmp_promote_test
+~$*
+*.tmp
+*.temp
+*.cache
+*.swp
+*.swo
+publish/
+# Logs
+*.log
+
+# Docker (se necessário ignorar algo específico)
+# .dockerignore já cobre builds Docker
+
+
+# Keystore passwords (gerado automaticamente)
+**/keystores/keystore-passwords.txt

@@ -1,0 +1,73 @@
+{
+  "expo": {
+    "name": "QrLinkki",
+    "slug": "qrlinkki",
+    "version": "1.0.0",
+    "orientation": "portrait",
+  "icon": "./assets/android/res/mipmap-xxxhdpi/ic_launcher.png",
+    "scheme": "qrlinkki",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "assets/**"
+    ],
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+  "foregroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher.png",
+  "backgroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_background.png",
+  "monochromeImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "usesCleartextTraffic": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.warph.qrlinkkiweb"
+    },
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "web": {
+      "output": "static",
+  "favicon": "./assets/android/res/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite acessar a câmera para ler QR codes."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8dadca6a-8920-43b5-90bd-2c9703e31c98"
+      }
+    }
+  }
+}

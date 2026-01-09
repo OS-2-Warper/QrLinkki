@@ -1,0 +1,359 @@
+name: Build Android Staging APK
+
+permissions:
+  contents: write
+  actions: read
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean_cache:
+        description: 'Clean Gradle cache before running build (true/false)'
+        required: false
+        default: 'false'
+      create_release:
+        description: 'Create GitHub release and upload asset (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  build-staging-apk:
+    runs-on: windows-latest
+    outputs:
+      apk_path: ${{ steps.check_apk.outputs.apk_path }}
+    env:
+      GRADLE_OPTS: -Xmx4096m -XX:MaxMetaspaceSize=1024m
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: QrLinkki.Web/package-lock.json
+
+      - name: Install frontend dependencies (npm ci)
+        shell: pwsh
+        run: |
+          Push-Location QrLinkki.Web
+          npm ci --silent
+          Pop-Location
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 33
+          components: platform-tools,build-tools;33.0.2,platforms;android-33
+
+      - name: Update Android SDK and accept licenses (Windows)
+        shell: pwsh
+        run: |
+          # Attempt to find sdkmanager on Windows and accept licenses
+          $sdkCandidates = @(
+            "$env:ANDROID_SDK_ROOT\cmdline-tools\latest\bin\sdkmanager.bat",
+            "$env:ANDROID_SDK_ROOT\tools\bin\sdkmanager.bat",
+            "$env:ANDROID_HOME\tools\bin\sdkmanager.bat"
+          )
+          foreach ($candidate in $sdkCandidates) {
+            if (Test-Path $candidate) {
+              Write-Host "Using sdkmanager at: $candidate" -ForegroundColor Green
+              & $candidate --update
+              cmd /c "echo y | `"$candidate`" --licenses"
+              exit 0
+            }
+          }
+          Write-Host "sdkmanager not found; skipping SDK update and license acceptance." -ForegroundColor Yellow
+
+      - name: Update Android SDK and accept licenses (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          set -e
+          # Try usual sdkmanager locations
+          SDKMGRS=("$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "/usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager" "$ANDROID_HOME/tools/bin/sdkmanager")
+          FOUND=0
+          for s in "${SDKMGRS[@]}"; do
+            if [ -x "$s" ]; then
+              echo "Using sdkmanager at: $s"
+              sudo "$s" --update || true
+              yes | sudo "$s" --licenses || true
+              FOUND=1
+              break
+            fi
+          done
+          if [ "$FOUND" -eq 0 ]; then
+            echo "sdkmanager not found; skipping SDK update and license acceptance."; fi
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Cache Android build outputs (optional, experimental)
+        uses: actions/cache@v4
+        with:
+          path: |
+            QrLinkki.Web/android/.gradle
+            QrLinkki.Web/android/app/build
+          key: ${{ runner.os }}-android-build-${{ hashFiles('QrLinkki.Web/**/build.gradle*', 'QrLinkki.Web/**/gradle-wrapper.properties') }}
+
+      - name: Clean Gradle cache (optional)
+        if: ${{ github.event.inputs.clean_cache == 'true' && runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          Write-Host "Cleaning Gradle cache (Windows)..."
+          Remove-Item -Recurse -Force $env:USERPROFILE\".gradle\caches" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force $env:USERPROFILE\".gradle\wrapper" -ErrorAction SilentlyContinue
+
+      - name: Clean Gradle cache (optional)
+        if: ${{ github.event.inputs.clean_cache == 'true' && runner.os == 'Linux' }}
+        run: |
+          echo "Cleaning Gradle cache (Linux)..."
+          sudo rm -rf ~/.gradle/caches/
+          sudo rm -rf ~/.gradle/wrapper/
+
+      - name: Create keystore from secret (if provided)
+        shell: pwsh
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if (-not $env:KEYSTORE_BASE64) {
+            Write-Host "No KEYSTORE_BASE64 provided; skipping keystore creation." -ForegroundColor Yellow
+            exit 0
+          }
+          New-Item -ItemType Directory -Force -Path QrLinkki.Web\keystores | Out-Null
+          $bytes = [System.Convert]::FromBase64String($env:KEYSTORE_BASE64)
+          [System.IO.File]::WriteAllBytes('QrLinkki.Web\keystores\qrlinkki-release.jks',$bytes)
+          Write-Host "Keystore written to QrLinkki.Web\keystores\qrlinkki-release.jks" -ForegroundColor Green
+
+      - name: Run staging APK build script (CI-optimized PowerShell)
+        shell: pwsh
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          Write-Host "Running CI-optimized staging build script..."
+          pwsh ./QrLinkki.Web/scripts/build-android-staging-ci.ps1
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrlinkki-staging-apk
+          path: QrLinkki.Web/android/app/build/outputs/apk/release/app-staging.apk
+
+      - name: Check APK exists
+        id: check_apk
+        shell: pwsh
+        run: |
+          $apk = "QrLinkki.Web\android\app\build\outputs\apk\release\app-staging.apk"
+          if (Test-Path $apk) {
+            echo "apk_path=$apk" >> $env:GITHUB_OUTPUT
+            Write-Host "APK found: $apk" -ForegroundColor Green
+          } else {
+            echo "apk_path=" >> $env:GITHUB_OUTPUT
+            Write-Host "APK not found, skipping release creation." -ForegroundColor Yellow
+          }
+
+      - name: Check GH_PAT availability
+        shell: pwsh
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          if ($env:GH_PAT) {
+            Write-Host "GH_PAT is provided" -ForegroundColor Green
+          } else {
+            Write-Host "GH_PAT is NOT provided; will fallback to GITHUB_TOKEN" -ForegroundColor Yellow
+          }
+
+      - name: Ensure staging release exists (idempotent)
+        if: ${{ steps.check_apk.outputs.apk_path != '' && github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true' }}
+        id: ensure_release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = `staging-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ID}`;
+            try {
+              const rel = await github.rest.repos.getReleaseByTag({ owner: context.repo.owner, repo: context.repo.repo, tag });
+              core.info(`Found existing staging release ${tag} (id=${rel.data.id})`);
+              core.setOutput('upload_url', rel.data.upload_url.replace('{?name,label}',''));
+              core.setOutput('release_id', rel.data.id);
+              core.setOutput('tag', tag);
+            } catch (err) {
+              if (err.status === 404) {
+                const rel = await github.rest.repos.createRelease({ owner: context.repo.owner, repo: context.repo.repo, tag_name: tag, name: `Staging Build ${process.env.GITHUB_RUN_NUMBER} [STAGING TEST]`, body: `Automatic staging build generated by workflow ${process.env.GITHUB_RUN_ID}\n\nNOTE: This is a STAGING/test build for verification only and not a public release. Do not publish or distribute from this draft until verification is complete.`, draft: true, prerelease: true });
+                core.info(`Created staging release ${tag} (id=${rel.data.id})`);
+                core.setOutput('upload_url', rel.data.upload_url);
+                core.setOutput('release_id', rel.data.id);
+                core.setOutput('tag', tag);
+              } else { throw err; }
+            }
+        continue-on-error: true
+
+      - name: Upload APK to Release
+        if: ${{ steps.check_apk.outputs.apk_path != '' && github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true' }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.ensure_release.outputs.upload_url }}
+          asset_path: ${{ steps.check_apk.outputs.apk_path }}
+          asset_name: app-staging.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Create Issue with artifact info if Release failed
+        if: ${{ steps.check_apk.outputs.apk_path != '' && github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true' && steps.create_release.outcome != 'success' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner, repo: context.repo.repo, run_id: runId
+            });
+            const artifactList = artifacts.data.artifacts.map(a => `- ${a.name}`).join('\n') || 'Nenhum artefato listado';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `CI: Artefato pronto — Falha ao criar Release (run ${runId})`,
+              body: `A criação do Release falhou por falta de credenciais; artefatos produzidos:\n\n${artifactList}\n\nVerifique o segredo \`GH_PAT\` e as permissões da organização.`
+            });
+
+  promote:
+    needs: build-staging-apk
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/ci/android-staging' && needs.build-staging-apk.outputs.apk_path != '' }}
+    environment:
+      name: staging
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qrlinkki-staging-apk
+          path: ./artifacts
+
+      - name: Locate APK
+        id: locate_apk
+        run: |
+          apk_file=$(find ./artifacts -type f -name "app-staging.apk" -print -quit)
+          if [ -z "$apk_file" ]; then echo "APK not found"; exit 1; fi
+          echo "APK_PATH=$apk_file" >> $GITHUB_OUTPUT
+
+      - name: Ensure staging release exists (idempotent)
+        id: ensure_release2
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = `staging-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ID}`;
+            try {
+              const rel = await github.rest.repos.getReleaseByTag({ owner: context.repo.owner, repo: context.repo.repo, tag });
+              core.info(`Found existing staging release ${tag} (id=${rel.data.id})`);
+              core.setOutput('upload_url', rel.data.upload_url.replace('{?name,label}',''));
+              core.setOutput('release_id', rel.data.id);
+              core.setOutput('tag', tag);
+            } catch (err) {
+              if (err.status === 404) {
+                const rel = await github.rest.repos.createRelease({ owner: context.repo.owner, repo: context.repo.repo, tag_name: tag, name: `Staging Build ${process.env.GITHUB_RUN_NUMBER} [STAGING TEST]`, body: `Staging build from run ${process.env.GITHUB_RUN_ID} (branch ci/android-staging)\n\nNOTE: This is a STAGING/test release (draft) for verification only — not a real/public release. Approve and publish only after verification.`, draft: true, prerelease: true });
+                core.info(`Created staging release ${tag} (id=${rel.data.id})`);
+                core.setOutput('upload_url', rel.data.upload_url.replace('{?name,label}',''));
+                core.setOutput('release_id', rel.data.id);
+                core.setOutput('tag', tag);
+              } else { throw err; }
+            }
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.ensure_release2.outputs.upload_url }}
+          asset_path: ${{ steps.locate_apk.outputs.APK_PATH }}
+          asset_name: app-staging.apk
+          asset_content_type: application/vnd.android.package-archive
+
+  # Promotion to publishable Release (requires Environment approval)
+  promote-release:
+    needs: build-staging-apk
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+    if: ${{ github.ref == 'refs/heads/main' && needs.build-staging-apk.outputs.apk_path != '' }}
+    environment:
+      name: release
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qrlinkki-staging-apk
+          path: ./artifacts
+
+      - name: Locate APK
+        id: locate_apk_release
+        run: |
+          apk_file=$(find ./artifacts -type f -name "app-staging.apk" -print -quit)
+          if [ -z "$apk_file" ]; then echo "APK not found"; exit 1; fi
+          echo "APK_PATH=$apk_file" >> $GITHUB_OUTPUT
+
+      - name: Verify release auth (fail-fast)
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const u = await github.rest.users.getAuthenticated();
+            console.log(`Authenticated as: ${u.data.login}`);
+
+      - name: Ensure release exists (idempotent)
+        id: ensure_release_prod
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = `release-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ID}`;
+            try {
+              const rel = await github.rest.repos.getReleaseByTag({ owner: context.repo.owner, repo: context.repo.repo, tag });
+              core.info(`Found existing release ${tag} (id=${rel.data.id})`);
+              core.setOutput('upload_url', rel.data.upload_url.replace('{?name,label}',''));
+              core.setOutput('release_id', rel.data.id);
+              core.setOutput('tag', tag);
+            } catch (err) {
+              if (err.status === 404) {
+                const rel = await github.rest.repos.createRelease({ owner: context.repo.owner, repo: context.repo.repo, tag_name: tag, name: `Release ${process.env.GITHUB_RUN_NUMBER} [STAGED PRERELEASE]`, body: `Staged prerelease generated by run ${process.env.GITHUB_RUN_ID} (branch main).\n\nApprove and publish only after verification.`, draft: false, prerelease: true });
+                core.info(`Created release ${tag} (id=${rel.data.id})`);
+                core.setOutput('upload_url', rel.data.upload_url.replace('{?name,label}',''));
+                core.setOutput('release_id', rel.data.id);
+                core.setOutput('tag', tag);
+              } else { throw err; }
+            }
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.ensure_release_prod.outputs.upload_url }}
+          asset_path: ${{ steps.locate_apk_release.outputs.APK_PATH }}
+          asset_name: app-staging.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Create Issue if Release failed
+        if: ${{ steps.create_release_prod.outcome != 'success' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({ owner: context.repo.owner, repo: context.repo.repo, run_id: runId });
+            const artifactList = artifacts.data.artifacts.map(a => `- ${a.name}`).join('\n') || 'Nenhum artefato listado';
+            await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: `CI: Falha ao criar Release (run ${runId})`, body: `A criação do Release falhou; artefatos produzidos:\n\n${artifactList}` });
+
