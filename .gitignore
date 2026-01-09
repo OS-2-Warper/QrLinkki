@@ -7,7 +7,7 @@
 # IDEs e Editores
 #==============================================================================
 # Visual Studio Code
-
+.github/agents/   
 .agent
 QrLinkki_secrets/
 .vscode/*
