@@ -14,6 +14,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Licença](https://img.shields.io/badge/Licença-MIT-green.svg?style=for-the-badge)](LICENSE)
 
+[![Deploy Backend](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml)
+
 **QrLinkki** é uma plataforma full-stack para criar, gerenciar e rastrear QR codes e URLs encurtadas, com foco em uma experiência nativa para **Android**. Construída com princípios de **Domain-Driven Design**.
 
 [Funcionalidades](#-funcionalidades) • [Como Rodar](#-como-rodar-o-projeto) • [Stack Tecnológica](#-stack-tecnológica)
