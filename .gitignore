@@ -1,20 +1,172 @@
 ################################################################################
 # .gitignore - Projeto QrLinkki
-# Configuração para .NET (C#) + React Native (Expo)
+# Organização: seções por tema
 ################################################################################
 
-#==============================================================================
-# IDEs e Editores
-#==============================================================================
-# Visual Studio Code
-.github/agents/   
-.agent
-QrLinkki_secrets/
+# -------------------------
+# IDEs / Editor Config
+# -------------------------
+
+#github
+.github/copilot-instructions.md
+
+# VS Code workspace settings (keep committed files only)
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+
+# Rider / IntelliJ
+.idea/
+
+# Misc editor temp files
+*.swp
+*.swo
+*~
+
+# -------------------------
+# Build artifacts (dotnet)
+# -------------------------
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# MSBuild logs
+*.binlog
+
+# Test results / coverage
+[Tt]est[Rr]esult*/
+*.trx
+coverage*.json
+coverage*.xml
+*.coverage
+
+# -------------------------
+# Node / React Native / Expo
+# -------------------------
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.pnpm-debug.log*
+
+# Expo / output
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Build outputs
+build/
+.build/
+**/bin/
+**/build/
+
+# -------------------------
+# Mobile native / platform
+# -------------------------
+/ios/
+/android/
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.kotlin/
+
+# Gradle
+android/gradle.properties
+android/local.properties
+.gradle/
+
+# -------------------------
+# Environment and secrets
+# -------------------------
+.env
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keystores & passwords
+keystores/
+**/keystores/keystore-passwords.txt
+
+# secrets and local-only files
+QrLinkki_secrets/
+secrets.md
+
+# -------------------------
+# Data / storage
+# -------------------------
+# Local DB files
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# API storage (ignored by default; some subpaths are allowed below)
+/QrLinkki.Api/Storage/
+api-storage/
+api-storage-local/
+data/
+sql-data-local/
+
+# Allow specific persisted data files in infrastructure
+!QrLinkki.Infrastructure/Persistence/Data/
+!QrLinkki.Infrastructure/Persistence/Data/AppDbContext.cs
+
+# -------------------------
+# Docker / misc
+# -------------------------
+publish/
+*.log
+tmp_promote_test
+~$*
+*.tmp
+*.temp
+*.cache
+
+# System files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -------------------------
+# Repo-specific ignores (agents and tooling)
+# -------------------------
+.github/agents/
+.agent
+
 
 # Visual Studio
 .vs/
@@ -119,8 +271,6 @@ buildlog*.txt
 # Pastas nativas geradas pelo Expo
 /ios/
 /android/
-# Mas permite android/ quando necessário para builds locais
-# (android/app/bin e android/app/build são gerados e devem ser ignorados)
 
 # Arquivos nativos sensíveis
 *.jks
