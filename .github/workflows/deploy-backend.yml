@@ -10,6 +10,7 @@ on:
       - 'QrLinkki.Infrastructure/**'
       - '.github/workflows/deploy-backend.yml'
       - 'entrypoint.sh'
+  workflow_dispatch:
 
 jobs:
   build-and-push:
