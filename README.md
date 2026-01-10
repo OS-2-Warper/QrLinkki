@@ -343,7 +343,7 @@ npm run build:android:release
 
 Se você achar este projeto útil, considere dar uma ⭐️ no GitHub!
 
-Para dúvidas ou suporte, por favor [abra uma issue](https://github.com/Wpnnt/QrLinkki/issues).
+Para dúvidas ou suporte, por favor [abra uma issue](https://github.com/OS-2-Warper/QrLinkki/issues).
 
 ---
 
