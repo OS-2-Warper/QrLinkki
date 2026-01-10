@@ -16,9 +16,13 @@
 
 [![Deploy Backend](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml)
 
+[![Versão de Teste v1.0](https://img.shields.io/badge/Vers%C3%A3o%20de%20Teste-v1.0-ff69b4?style=for-the-badge)](https://github.com/OS-2-Warper/QrLinkki/releases/tag/v1.0)
+
 **QrLinkki** é uma plataforma full-stack para criar, gerenciar e rastrear QR codes e URLs encurtadas, com foco em uma experiência nativa para **Android**. Construída com princípios de **Domain-Driven Design**.
 
 [Funcionalidades](#-funcionalidades) • [Como Rodar](#-como-rodar-o-projeto) • [Stack Tecnológica](#-stack-tecnológica)
+
+> **Versão de Teste (v1.0):** uma versao de teste está disponível — baixe a build em releases https://github.com/OS-2-Warper/QrLinkki/releases/tag/v1.0
 
 </div>
 
@@ -47,6 +51,18 @@
 - **Autenticação JWT** — Autenticação segura baseada em tokens
 - **Acesso Exclusivo do Proprietário** — Apenas donos dos links podem modificar seu conteúdo
 - **Proteção de Dados** — Armazenamento seguro de credenciais
+
+---
+
+## 🖼️ Showcase
+
+Algumas telas e exemplos do projeto:
+
+<p align="center">
+  <img src="Readme-Assets/showcase-pagina-principal.jpg" alt="Página principal" width="300" style="margin-right:8px;" />
+  <img src="Readme-Assets/showcase-novo-link.jpg" alt="Novo link" width="300" style="margin-right:8px;" />
+  <img src="Readme-Assets/showcase-login.jpg" alt="Login" width="300" />
+</p>
 
 ---
 
@@ -292,15 +308,7 @@ npm run build:android:release
 - Usuários só podem modificar seus próprios links e perfil
 - Tokens JWT são armazenados de forma segura usando Expo SecureStore
 - Rastreamento de cliques registra endereços IP para análise
-
 ---
-
-## 📄 Licença
-
-Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
-
 ## 👨‍💻 Contribuidores
 
 **QrLinkki** é desenvolvido e mantido por:
@@ -328,6 +336,7 @@ Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](
   </tr>
 </table>
 
+
 ---
 
 ## 🌟 Suporte
@@ -335,6 +344,12 @@ Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](
 Se você achar este projeto útil, considere dar uma ⭐️ no GitHub!
 
 Para dúvidas ou suporte, por favor [abra uma issue](https://github.com/Wpnnt/QrLinkki/issues).
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
