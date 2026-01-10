@@ -344,6 +344,7 @@ $RECYCLE.BIN/
 # Outros
 #==============================================================================
 secrets.md
+actionlint.tar.gz
 
 # Temporários
 tmp_promote_test
@@ -354,6 +355,7 @@ tmp_promote_test
 *.swp
 *.swo
 publish/
+
 # Logs
 *.log
 
@@ -363,3 +365,19 @@ publish/
 
 # Keystore passwords (gerado automaticamente)
 **/keystores/keystore-passwords.txt
+
+
+# -------------------------
+# Local development / Testing
+# -------------------------
+# Ignorar arquivos de evento e configurações JSON na raiz
+*.json
+
+#act rodar actions localmente
+.actrc  
+
+#workflows localmente
+.github/workflows/deploy-backend.test.yml
+
+
+.yamllint
