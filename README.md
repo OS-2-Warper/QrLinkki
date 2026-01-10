@@ -2,7 +2,7 @@
 # QrLinkki
 
 <div align="center">
-  <img src="assets/logo-removebg.png" alt="QrLinkki Logo" width="200" />
+  <img src="assets/logo.png" alt="QrLinkki Logo" width="200" />
 </div>
 
 ### Plataforma Moderna de Geração de QR Codes e Encurtador de URLs
