@@ -28,16 +28,16 @@
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-### 🎯 Funcionalidades Principais
+### Funcionalidades Principais
 - **Geração de QR Codes** — Crie QR codes dinâmicos a partir de qualquer URL ou texto
 - **Encurtamento de URLs** — Gere links curtos e memoráveis com códigos personalizados
 - **Contagem de Cliques** — Visualize quantos acessos seus links tiveram
 - **Gerenciamento de Usuários** — Autenticação segura com tokens JWT
 - **Redirecionamentos Públicos** — Redirecionamento transparente a partir de URLs curtas
 
-### 📱 Aplicativo
+### Aplicativo
 - **Android Nativo** — Desenvolvido e otimizado especificamente para o ecossistema Android
 - **Scanner de QR** — Scanner de câmera integrado para QR codes
 - **Dashboard** — Gerencie todos os seus links em um só lugar
@@ -47,14 +47,14 @@
 > [!NOTE]
 > **Compatibilidade:** Este projeto foi desenvolvido e testado exclusivamente em dispositivos **Android**. Embora utilize React Native, o funcionamento em iOS ou Web não foi verificado e pode exigir adaptações.
 
-### 🔒 Segurança
+### Segurança
 - **Autenticação JWT** — Autenticação segura baseada em tokens
 - **Acesso Exclusivo do Proprietário** — Apenas donos dos links podem modificar seu conteúdo
 - **Proteção de Dados** — Armazenamento seguro de credenciais
 
 ---
 
-## 🖼️ Showcase
+## Showcase
 
 Algumas telas e exemplos do projeto:
 
@@ -112,7 +112,7 @@ QrLinkki.Web/
 
 ---
 
-## 🚀 Stack Tecnológica
+## Stack Tecnológica
 
 ### Backend
 
@@ -133,7 +133,7 @@ QrLinkki.Web/
 | **React Native** | 0.81 | Framework de UI |
 | **React** | 19.1 | Biblioteca de UI |
 
-## 📱 Como Rodar o Projeto
+## Como Rodar o Projeto
 
 Este projeto utiliza scripts PowerShell para facilitar o build e desenvolvimento Android.
 
@@ -210,7 +210,7 @@ Quando a API estiver rodando, visite `http://localhost:5000/swagger` para docume
 
 ---
 
-## 📱 Funcionalidades do Frontend
+## Funcionalidades do Frontend
 
 ### Fluxo de Autenticação
 - Login/registro seguro com JWT
@@ -300,7 +300,7 @@ npm run build:android:release
 
 ---
 
-## 🔐 Notas de Segurança
+## Notas de Segurança
 
 > **Importante:** O endpoint público de redirecionamento `/r/{code}` é intencionalmente público para permitir que QR codes sejam escaneados por qualquer pessoa. Se você precisa de links privados, será necessário implementar autenticação neste endpoint (nota: isso quebrará a funcionalidade pública dos QR codes).
 
@@ -354,7 +354,5 @@ Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](
 ---
 
 <div align="center">
-
-**Feito com ❤️ usando .NET e React Native**
 
 </div>
