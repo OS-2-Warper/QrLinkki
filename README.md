@@ -16,13 +16,9 @@
 
 [![Deploy Backend](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/OS-2-Warper/QrLinkki/actions/workflows/deploy-backend.yml)
 
-[![Versão de Teste v1.0](https://img.shields.io/badge/Vers%C3%A3o%20de%20Teste-v1.0-ff69b4?style=for-the-badge)](https://github.com/OS-2-Warper/QrLinkki/releases/tag/v1.0)
-
 **QrLinkki** é uma plataforma full-stack para criar, gerenciar e rastrear QR codes e URLs encurtadas, com foco em uma experiência nativa para **Android**. Construída com princípios de **Domain-Driven Design**.
 
-[Funcionalidades](#-funcionalidades) • [Como Rodar](#-como-rodar-o-projeto) • [Stack Tecnológica](#-stack-tecnológica)
-
-> **Versão de Teste (v1.0):** uma versao de teste está disponível — baixe a build em releases https://github.com/OS-2-Warper/QrLinkki/releases/tag/v1.0
+[Funcionalidades](#funcionalidades) • [Como Rodar](#como-rodar-o-projeto) • [Stack](#stack)
 
 </div>
 
@@ -42,7 +38,7 @@
 - **Scanner de QR** — Scanner de câmera integrado para QR codes
 - **Dashboard** — Gerencie todos os seus links em um só lugar
 - **Design Moderno** — Interface visualmente agradável
-- **Suporte Offline** — Cache local para melhor performance
+- **Cache** — Cache local para melhor performance
 
 > [!NOTE]
 > **Compatibilidade:** Este projeto foi desenvolvido e testado exclusivamente em dispositivos **Android**. Embora utilize React Native, o funcionamento em iOS ou Web não foi verificado e pode exigir adaptações.
@@ -112,7 +108,7 @@ QrLinkki.Web/
 
 ---
 
-## Stack Tecnológica
+## Stack
 
 ### Backend
 
