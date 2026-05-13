@@ -335,7 +335,7 @@ npm run build:android:release
 
 ---
 
-## 🌟 Suporte
+## Suporte
 
 Se você achar este projeto útil, considere dar uma ⭐️ no GitHub!
 
